@@ -33,8 +33,10 @@ def build_mars_estimator():
 
     nn1 = keras.Sequential()
     # This is worth about 9% if we cut neurons down to 25
-    nn1.add(keras.layers.Dense(num_lay_nodes, kernel_initializer="uniform", 
-                                   activation='sigmoid', input_dim=5))
+    nn1.add(keras.layers.Dense(num_lay_nodes, kernel_initializer="uniform",
+                               activation='sigmoid', input_dim=5))
+    nn1.add(keras.layers.Dense(num_lay_nodes, kernel_initializer="uniform",
+                               activation='sigmoid', input_dim=5))
     nn1.add(keras.layers.Dense(units=1, activation='linear'))
     # training
     # sgd = keras.optimizers.SGD(lr=0.0001);
@@ -43,8 +45,9 @@ def build_mars_estimator():
     nn1.compile(loss='mse', optimizer=adam)
     return(nn1)
 
+
 debug = False
-num_lay_nodes = 12
+num_lay_nodes = 50
 lr = .01
 epochs = 3000
 keras_verbose = 0
@@ -84,15 +87,15 @@ if  __name__ == '__main__':
 
     #np.random.seed(seed=47)
 
-    n_mc = 60
-    n_z = 30
-    n=10000
+    n_mc = 100
+    n_z = 20
+    n = 10000
     k_n = n**0.5
 
     # num_processes = 12
     in_interval_2 = 0
     in_interval_3 = 0
-    num_trials = 5
+    num_trials = 1
     start_time = datetime.now()
     estimates = list()
     nn = build_mars_estimator()
@@ -118,7 +121,7 @@ if  __name__ == '__main__':
             samples=[np.concatenate((reg_down[np.random.choice(size, int(size**.5))],fixed)) for _ in range(n_mc)]
             #add fixed point back
             regress = np.concatenate((reg_down, fixed), axis=0)
-            with Pool(8) as p:
+            with Pool(16) as p:
                 seq=p.map(estimate, samples)
             #change type from map iter
             pred=np.fromiter(seq, dtype=np.int)
@@ -153,7 +156,7 @@ if  __name__ == '__main__':
         in_interval_2 / num_trials, in_interval_3/num_trials))
     
     with open('mars_estimates.csv', 'w') as f:
-        writer = csv.writer(f , lineterminator='\n')
+        writer = csv.writer(f, lineterminator='\n')
         for tup in estimates:
             writer.writerow(tup)
 
