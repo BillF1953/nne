@@ -111,3 +111,6 @@ config.rst
 package-lock.json
 geckodriver.log
 *.iml
+
+# paper_submission folder
+/paper_submission
